@@ -1,0 +1,268 @@
+/* =========================================================
+   Regal Group International — refined graphics layer
+   Quiet luxury: fine gold linework, grain, duotone plates,
+   art-deco detailing. Restraint over decoration.
+   ========================================================= */
+
+/* ---------- Film grain (global, barely-there) ---------- */
+.grain::after {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Brand crest ---------- */
+.crest { display: inline-block; line-height: 0; }
+.crest svg { display: block; }
+.crest--hero { width: 64px; height: 64px; margin-bottom: 26px; }
+.crest--footer { width: 52px; height: 52px; }
+.crest .crest__ring { stroke: var(--gold-soft); }
+.crest .crest__tick { stroke: var(--gold-soft); }
+.crest .crest__letter { fill: var(--ivory); font-family: var(--serif); }
+.crest .crest__word { fill: var(--gold-soft); font-family: var(--sans); letter-spacing: 3px; }
+
+/* ---------- Art-deco divider ---------- */
+.deco {
+  display: flex; align-items: center; gap: 16px;
+  margin: 26px 0 0;
+}
+.deco--center { justify-content: center; }
+.deco__line {
+  height: 1px; width: 64px;
+  background: linear-gradient(90deg, transparent, var(--gold-deep));
+}
+.deco--center .deco__line:last-child {
+  background: linear-gradient(90deg, var(--gold-deep), transparent);
+}
+.deco__gem {
+  width: 9px; height: 9px;
+  border: 1px solid var(--gold-soft);
+  transform: rotate(45deg);
+  flex: none;
+  position: relative;
+}
+.deco__gem::after {
+  content: ""; position: absolute; inset: 2px;
+  background: var(--gold);
+}
+
+/* ---------- Duotone photo plate ----------
+   Drop a real photo in via inline style:
+   style="--img:url('assets/img/your-photo.jpg')"
+   It is auto-toned navy + gold so nothing reads "loud."
+*/
+.plate {
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+  background:
+    linear-gradient(160deg, var(--navy-700), var(--navy-900));
+}
+.plate__img {
+  position: absolute; inset: 0;
+  background-image: var(--img, none);
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(0.35) contrast(1.02) brightness(0.82);
+}
+.plate__img::after {            /* duotone wash */
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(165deg, rgba(31,51,84,0.45), rgba(11,19,32,0.86)),
+    radial-gradient(90% 70% at 80% 10%, rgba(198,162,76,0.16), transparent 60%);
+  mix-blend-mode: multiply;
+}
+.plate__grain {
+  position: absolute; inset: 0; pointer-events: none;
+  opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+
+/* Portrait of a person — keep the face natural & warm; only a light editorial polish
+   and a soft bottom vignette so the name plate stays legible. NOT the heavy navy wash
+   used on the architectural/asset plates. */
+.about__portrait--photo .plate__img {
+  filter: contrast(1.04) saturate(0.97) brightness(0.99);
+}
+.about__portrait--photo .plate__img::after {
+  background:
+    linear-gradient(180deg, rgba(11,19,32,0) 45%, rgba(11,19,32,0.16) 72%, rgba(11,19,32,0.72) 100%),
+    linear-gradient(0deg, transparent 70%, rgba(198,162,76,0.05) 100%);
+  mix-blend-mode: normal;
+}
+
+/* Thin gold corner brackets for framed plates */
+.framed::before, .framed::after {
+  content: ""; position: absolute;
+  width: 26px; height: 26px; z-index: 3;
+  border: 1px solid var(--gold-soft);
+}
+.framed::before { top: 14px; left: 14px; border-right: 0; border-bottom: 0; }
+.framed::after { bottom: 14px; right: 14px; border-left: 0; border-top: 0; }
+
+/* ---------- Asset line-art (quiet background motifs) ---------- */
+.assetart {
+  position: absolute;
+  pointer-events: none;
+  color: var(--gold-soft);
+  opacity: 0.07;
+}
+.assetart svg { width: 100%; height: 100%; display: block; }
+
+/* skyline plate overlay (real-estate plate default art) */
+.plate__skyline {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 58%;
+  color: var(--gold-soft);
+  opacity: 0.5;
+  z-index: 2;
+}
+.plate__skyline svg { width: 100%; height: 100%; display: block; }
+
+/* Beyond band — soft jet + yacht motifs behind the cards */
+.beyond { isolation: isolate; }
+.beyond .assetart--jet {
+  top: 8%; right: -40px; width: 320px; height: 150px;
+  opacity: 0.06;
+}
+.beyond .assetart--yacht {
+  bottom: -10px; left: -30px; width: 360px; height: 130px;
+  opacity: 0.05;
+}
+
+/* ---------- Hero refinement: fine concentric arcs ---------- */
+.hero__arcs {
+  position: absolute; inset: 0; pointer-events: none;
+  z-index: 0;
+  background:
+    repeating-radial-gradient(circle at 86% 22%,
+      rgba(198,162,76,0.10) 0px,
+      rgba(198,162,76,0.10) 1px,
+      transparent 1px,
+      transparent 46px);
+  mask-image: radial-gradient(60% 60% at 86% 22%, #000 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(60% 60% at 86% 22%, #000 0%, transparent 70%);
+  opacity: 0.9;
+}
+
+/* Real brand logo — hero (prominent) */
+.hero__logo {
+  display: block;
+  width: min(360px, 74vw);
+  height: auto;
+  margin: 0 0 30px;
+  filter: drop-shadow(0 6px 24px rgba(0,0,0,0.35));
+}
+
+/* Footer crest row + prominent logo */
+.footer__crestrow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 18px; margin-bottom: 40px;
+}
+.footer__crestrow .deco__line { width: 96px; }
+.footer__logo {
+  width: min(300px, 70vw);
+  height: auto;
+  opacity: 0.95;
+}
+
+/* ---------- Per-card checklist download link ---------- */
+.card-doc {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 18px;
+  font-size: 0.82rem; font-weight: 500; letter-spacing: 0.03em;
+  color: var(--gold-soft);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 3px;
+  transition: color 0.3s, border-color 0.3s;
+}
+.card-doc svg { width: 15px; height: 15px; flex: none; }
+.card-doc:hover { color: var(--gold); border-color: var(--gold); }
+
+/* ---------- Section background photos (toned, quiet) ---------- */
+.has-secbg { position: relative; isolation: isolate; }
+.has-secbg > .container { position: relative; z-index: 1; }
+.secbg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.secbg__img { position: absolute; inset: 0; background-image: var(--img); background-size: cover; background-position: center; }
+.secbg__img::after { content: ""; position: absolute; inset: 0; }
+
+/* Dark sections — tone toward navy, keep as a subtle texture */
+.secbg--dark .secbg__img { filter: grayscale(0.55) contrast(1.02) brightness(0.62); }
+.secbg--dark .secbg__img::after {
+  background:
+    linear-gradient(180deg, rgba(11,19,32,0.84), rgba(11,19,32,0.74)),
+    radial-gradient(80% 80% at 75% 25%, rgba(198,162,76,0.07), transparent 60%);
+}
+
+/* Light sections — faint photographic texture under paper */
+.secbg--light .secbg__img { filter: grayscale(0.7) contrast(1.0) brightness(1.05); opacity: 0.11; }
+.secbg--light .secbg__img::after {
+  background: linear-gradient(180deg, rgba(251,249,244,0.5), rgba(251,249,244,0.74));
+}
+
+/* Hero photographic backdrop — a faint architectural texture in the right corner only */
+.hero__photo { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.hero__photo .secbg__img { filter: grayscale(0.65) contrast(1.0) brightness(0.4); background-position: right center; }
+.hero__photo .secbg__img::after {
+  background:
+    linear-gradient(105deg, rgba(11,19,32,1) 50%, rgba(11,19,32,0.96) 72%, rgba(11,19,32,0.88) 100%),
+    linear-gradient(0deg, rgba(11,19,32,0.9), rgba(11,19,32,0.55) 45%, rgba(11,19,32,0.8));
+}
+
+/* ---------- Miami skyline band ---------- */
+.skyline {
+  position: relative;
+  min-height: clamp(360px, 52vh, 540px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--ivory);
+  isolation: isolate;
+}
+.skyline__media { position: absolute; inset: 0; border-radius: 0; z-index: 0; }
+/* Night skyline: keep the city lights legible, tone toward navy rather than crush it */
+.skyline__media .plate__img {
+  filter: grayscale(0.2) contrast(1.05) brightness(0.7);
+}
+.skyline__media .plate__img::after {
+  background:
+    linear-gradient(180deg, rgba(11,19,32,0.78) 0%, rgba(11,19,32,0.42) 45%, rgba(11,19,32,0.82) 100%),
+    radial-gradient(70% 120% at 50% 50%, rgba(198,162,76,0.10), transparent 60%);
+}
+.skyline__inner { position: relative; z-index: 2; text-align: center; }
+.skyline__title {
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(2rem, 4.2vw, 3.3rem);
+  line-height: 1.08;
+  color: var(--ivory);
+  margin: 14px 0 0;
+  text-shadow: 0 2px 30px rgba(0,0,0,0.5);
+}
+.skyline .deco { justify-content: center; margin-top: 22px; }
+
+/* Keep hero content above the arc motif */
+.hero__inner { z-index: 2; }
+.hero__bg, .hero__veil { z-index: 0; }
+
+@media (max-width: 920px) {
+  .beyond .assetart--jet, .beyond .assetart--yacht { display: none; }
+  .hero__arcs { opacity: 0.5; }
+}
+
+/* ---------- Lighter "old money" heading weight ---------- */
+.hero__title,
+.section__title,
+.stat__num,
+.service h3,
+.beyond__title,
+.beyond-card h3,
+.process__steps h3,
+.skyline__title,
+.about__plate-name,
+.quote blockquote {
+  font-weight: 400;
+}
