@@ -16,8 +16,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
-  <link rel="stylesheet" href="assets/css/graphics.css" />
+  <link rel="stylesheet" href="assets/css/styles.css?v=20260611" />
+  <link rel="stylesheet" href="assets/css/graphics.css?v=20260611" />
 </head>
 <body class="grain">
 
@@ -396,9 +396,16 @@
       </div>
 
       <form class="contact__form reveal" id="leadForm" novalidate>
-        <div class="field">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" name="name" autocomplete="name" required />
+        <p class="form__lead">Get started — a few basics, no sensitive info. Juan will personally follow up.</p>
+        <div class="field field--split">
+          <div>
+            <label for="firstname">First Name</label>
+            <input type="text" id="firstname" name="firstname" autocomplete="given-name" required />
+          </div>
+          <div>
+            <label for="lastname">Last Name</label>
+            <input type="text" id="lastname" name="lastname" autocomplete="family-name" required />
+          </div>
         </div>
         <div class="field field--split">
           <div>
@@ -410,26 +417,61 @@
             <input type="tel" id="phone" name="phone" autocomplete="tel" />
           </div>
         </div>
+        <div class="field field--split">
+          <div>
+            <label for="type">Type of Financing</label>
+            <select id="type" name="financing_type">
+              <option value="">Select…</option>
+              <option>Commercial Lending</option>
+              <option>Residential Lending</option>
+              <option>Construction Financing</option>
+              <option>Private Equity / Bridge</option>
+              <option>CRE Line of Credit</option>
+              <option>Aircraft Financing</option>
+              <option>Maritime Financing</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+          <div>
+            <label for="purpose">Loan Purpose</label>
+            <select id="purpose" name="loan_purpose">
+              <option value="">Select…</option>
+              <option>Purchase</option>
+              <option>Refinance</option>
+              <option>Cash-out Refinance</option>
+              <option>Construction / Build</option>
+              <option>Line of Credit</option>
+              <option>Not sure yet</option>
+            </select>
+          </div>
+        </div>
+        <div class="field field--split">
+          <div>
+            <label for="property">Property Location</label>
+            <input type="text" id="property" name="property_location" placeholder="City, State" autocomplete="off" />
+          </div>
+          <div>
+            <label for="amount">Estimated Amount</label>
+            <input type="text" id="amount" name="loan_amount" placeholder="$" inputmode="numeric" autocomplete="off" />
+          </div>
+        </div>
         <div class="field">
-          <label for="type">Type of Financing</label>
-          <select id="type" name="type">
+          <label for="timeline">Timeline</label>
+          <select id="timeline" name="timeline">
             <option value="">Select…</option>
-            <option>Commercial Lending</option>
-            <option>Residential Lending</option>
-            <option>Construction Financing</option>
-            <option>Private Equity / Bridge</option>
-            <option>CRE Line of Credit</option>
-            <option>Aircraft Financing</option>
-            <option>Maritime Financing</option>
-            <option>Not sure yet</option>
+            <option>As soon as possible</option>
+            <option>1–3 months</option>
+            <option>3–6 months</option>
+            <option>Just exploring</option>
           </select>
         </div>
         <div class="field">
-          <label for="message">About the Deal</label>
-          <textarea id="message" name="message" rows="4" placeholder="Property type, location, amount, timeline…"></textarea>
+          <label for="message">Anything else?</label>
+          <textarea id="message" name="message" rows="3" placeholder="Tell Juan a bit about the deal…"></textarea>
         </div>
         <button type="submit" class="btn btn--gold btn--block">Request Consultation</button>
         <p class="form__note" id="formNote" aria-live="polite"></p>
+        <p class="form__fineprint">By submitting, you agree to be contacted about your inquiry. Please don't include sensitive financial details here — your secure application happens on Floify.</p>
       </form>
     </div>
   </section>
@@ -482,6 +524,6 @@
     </div>
   </footer>
 
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/main.js?v=20260611"></script>
 </body>
 </html>

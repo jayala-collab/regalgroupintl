@@ -83,23 +83,64 @@
     yearEl.textContent = String(new Date().getFullYear());
   }
 
-  /* ---- Lead form (client-side only; wire to a real handler) ---- */
+  /* ---- Lead form → HubSpot Forms API (creates a Contact in the CRM) ---- */
+  var HS_PORTAL = "245223034";
+  var HS_FORM = "9447e86d-2870-4244-8d05-03319d72ed41";
   var form = document.getElementById("leadForm");
   var note = document.getElementById("formNote");
   if (form) {
+    var val = function (id) { var el = form.querySelector("#" + id); return el ? el.value.trim() : ""; };
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var name = form.querySelector("#name");
-      var email = form.querySelector("#email");
-      if (!name.value.trim() || !email.value.trim()) {
-        note.textContent = "Please add your name and email so we can reach you.";
+      var firstname = val("firstname"), lastname = val("lastname"), email = val("email");
+      if (!firstname || !lastname || !email) {
         note.style.color = "#E2A0A0";
+        note.textContent = "Please add your name and email so Juan can reach you.";
         return;
       }
-      // TODO: POST to a real endpoint (Formspree, Netlify Forms, or info@regalgroupintl.com handler).
-      note.style.color = "";
-      note.textContent = "Thank you — your request has been received. Juan will be in touch within one business day.";
-      form.reset();
+      var btn = form.querySelector('button[type="submit"]');
+      var label = btn ? btn.textContent : "";
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      note.style.color = ""; note.textContent = "";
+
+      // Fold the loan details into the message field (the HubSpot form captures these)
+      var lines = [];
+      [["Financing type", "type"], ["Loan purpose", "purpose"], ["Property location", "property"],
+       ["Estimated amount", "amount"], ["Timeline", "timeline"]].forEach(function (p) {
+        var v = val(p[1]); if (v) lines.push(p[0] + ": " + v);
+      });
+      var notes = val("message");
+      var message = lines.join("\n") + (notes ? ("\n\nNotes: " + notes) : "");
+
+      var payload = {
+        fields: [
+          { name: "firstname", value: firstname },
+          { name: "lastname", value: lastname },
+          { name: "email", value: email },
+          { name: "phone", value: val("phone") },
+          { name: "message", value: message }
+        ],
+        context: { pageUri: location.href, pageName: document.title }
+      };
+
+      fetch("https://api.hsforms.com/submissions/v3/integration/submit/" + HS_PORTAL + "/" + HS_FORM, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(function (res) {
+        if (res.ok) {
+          note.style.color = "";
+          note.textContent = "Thank you — your request has been received. Juan will personally follow up within one business day.";
+          form.reset();
+        } else {
+          return res.json().then(function (d) { throw new Error((d && d.message) || ("HTTP " + res.status)); });
+        }
+      }).catch(function () {
+        note.style.color = "#E2A0A0";
+        note.textContent = "Sorry — something went wrong. Please call (786) 247-0244 or email info@regalgroupintl.com.";
+      }).then(function () {
+        if (btn) { btn.disabled = false; btn.textContent = label; }
+      });
     });
   }
 })();
