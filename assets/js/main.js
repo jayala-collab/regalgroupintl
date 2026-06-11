@@ -83,9 +83,8 @@
     yearEl.textContent = String(new Date().getFullYear());
   }
 
-  /* ---- Lead form → HubSpot Forms API (creates a Contact in the CRM) ---- */
-  var HS_PORTAL = "245223034";
-  var HS_FORM = "9447e86d-2870-4244-8d05-03319d72ed41";
+  /* ---- Lead form → Cloudflare relay → HubSpot (Contact + Deal in "Mortgage Leads") ---- */
+  var RELAY_URL = "https://regal-lead-relay.j-ayala.workers.dev";
   var form = document.getElementById("leadForm");
   var note = document.getElementById("formNote");
   if (form) {
@@ -103,7 +102,7 @@
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
       note.style.color = ""; note.textContent = "";
 
-      // Fold the loan details into the message field (the HubSpot form captures these)
+      // Compose a readable summary of the loan details for the contact note / deal description
       var lines = [];
       [["Financing type", "type"], ["Loan purpose", "purpose"], ["Property location", "property"],
        ["Estimated amount", "amount"], ["Timeline", "timeline"]].forEach(function (p) {
@@ -112,29 +111,35 @@
       var notes = val("message");
       var message = lines.join("\n") + (notes ? ("\n\nNotes: " + notes) : "");
 
+      // Send raw fields — the relay builds the Contact + Deal in HubSpot
       var payload = {
-        fields: [
-          { name: "firstname", value: firstname },
-          { name: "lastname", value: lastname },
-          { name: "email", value: email },
-          { name: "phone", value: val("phone") },
-          { name: "message", value: message }
-        ],
-        context: { pageUri: location.href, pageName: document.title }
+        firstname: firstname,
+        lastname: lastname,
+        email: email,
+        phone: val("phone"),
+        financing_type: val("type"),
+        loan_purpose: val("purpose"),
+        property_location: val("property"),
+        loan_amount: val("amount"),
+        timeline: val("timeline"),
+        message: message,
+        pageUri: location.href
       };
 
-      fetch("https://api.hsforms.com/submissions/v3/integration/submit/" + HS_PORTAL + "/" + HS_FORM, {
+      fetch(RELAY_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       }).then(function (res) {
-        if (res.ok) {
-          note.style.color = "";
-          note.textContent = "Thank you — your request has been received. Juan will personally follow up within one business day.";
-          form.reset();
-        } else {
-          return res.json().then(function (d) { throw new Error((d && d.message) || ("HTTP " + res.status)); });
-        }
+        return res.json().then(function (d) {
+          if (res.ok && d && d.ok) {
+            note.style.color = "";
+            note.textContent = "Thank you — your request has been received. Juan will personally follow up within one business day.";
+            form.reset();
+          } else {
+            throw new Error((d && d.error) || ("HTTP " + res.status));
+          }
+        });
       }).catch(function () {
         note.style.color = "#E2A0A0";
         note.textContent = "Sorry — something went wrong. Please call (786) 247-0244 or email info@regalgroupintl.com.";

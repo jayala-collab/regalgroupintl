@@ -10,3 +10,6 @@ __pycache__/
 # Temp
 /tmp/
 *_src.jpg
+
+# Cloudflare Worker source — deployed via Cloudflare, not served by the website
+worker/
