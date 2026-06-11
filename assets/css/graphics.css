@@ -170,6 +170,23 @@
   opacity: 0.95;
 }
 
+/* ---------- "Apply Now" callout (→ Floify) ---------- */
+.apply-cta {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  margin-top: 28px; padding: 18px 24px;
+  border: 1px solid var(--gold-soft);
+  border-radius: 4px;
+  background: linear-gradient(120deg, rgba(198,162,76,0.14), rgba(198,162,76,0.05));
+  color: var(--ivory);
+  transition: transform 0.4s var(--ease), background 0.3s, border-color 0.3s;
+}
+.apply-cta:hover { transform: translateY(-2px); background: linear-gradient(120deg, rgba(198,162,76,0.22), rgba(198,162,76,0.08)); }
+.apply-cta__body { display: flex; flex-direction: column; gap: 3px; }
+.apply-cta__body strong { font-size: 1.02rem; font-weight: 600; letter-spacing: 0.01em; color: var(--ivory); }
+.apply-cta__body span { font-size: 0.88rem; color: rgba(246,242,234,0.7); }
+.apply-cta__arrow { font-size: 1.5rem; color: var(--gold-soft); flex: none; }
+.apply-or { margin: 14px 0 4px; font-size: 0.85rem; color: rgba(246,242,234,0.55); }
+
 /* ---------- Per-card checklist download link ---------- */
 .card-doc {
   display: inline-flex; align-items: center; gap: 7px;
