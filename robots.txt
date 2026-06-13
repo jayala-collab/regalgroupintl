@@ -1,0 +1,35 @@
+# Regal Group International — robots.txt
+# Everyone is welcome to crawl the site.
+User-agent: *
+Allow: /
+
+# AI assistants — explicitly welcomed so Regal can appear in AI answers
+# (ChatGPT, Claude, Perplexity, Google AI Overviews, etc.)
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+Sitemap: https://regalgroupintl.com/sitemap.xml

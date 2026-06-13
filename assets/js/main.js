@@ -4,6 +4,13 @@
 (function () {
   "use strict";
 
+  /* ---- Meta Pixel helper (no-op until a real Pixel ID is set in index.html) ---- */
+  function track(event, params) {
+    if (typeof window.fbq === "function" && window.META_PIXEL_ID && /^\d+$/.test(window.META_PIXEL_ID)) {
+      window.fbq("track", event, params || {});
+    }
+  }
+
   /* ---- Sticky nav shading ---- */
   var nav = document.getElementById("nav");
   function onScroll() {
@@ -133,6 +140,7 @@
       }).then(function (res) {
         return res.json().then(function (d) {
           if (res.ok && d && d.ok) {
+            track("Lead", { content_name: "Get Started Form", content_category: val("type") || "Lending Inquiry" });
             note.style.color = "";
             note.textContent = "Thank you — your request has been received. Juan will personally follow up within one business day.";
             form.reset();
@@ -148,4 +156,18 @@
       });
     });
   }
+
+  /* ---- High-intent click tracking for Meta (Apply + checklist downloads) ---- */
+  document.querySelectorAll('a[href*="floify.com"], a.apply-cta').forEach(function (a) {
+    a.addEventListener("click", function () {
+      track("InitiateCheckout", { content_name: "Apply — Floify" });
+    });
+  });
+  document.querySelectorAll("a.card-doc").forEach(function (a) {
+    a.addEventListener("click", function () {
+      var href = a.getAttribute("href") || "";
+      var name = href.split("/").pop().replace("-checklist.pdf", "").replace(/-/g, " ");
+      track("ViewContent", { content_name: name, content_category: "Financing Checklist" });
+    });
+  });
 })();
