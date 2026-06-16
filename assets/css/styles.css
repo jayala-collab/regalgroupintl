@@ -535,6 +535,45 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .field select option { color: #11161f; }
 .form__note { margin: 16px 0 0; font-size: 0.9rem; color: var(--gold-soft); min-height: 1.2em; }
 
+/* ---------- Recent Transactions ---------- */
+.tx__head { max-width: 680px; margin: 0 0 44px; }
+.tx__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.tx-card {
+  background: var(--navy-800);
+  border: 1px solid rgba(198,162,76,0.25);
+  border-radius: 6px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: transform 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.tx-card:hover { transform: translateY(-5px); border-color: var(--gold-soft); box-shadow: 0 24px 50px rgba(0,0,0,0.42); }
+.tx-card__media { position: relative; aspect-ratio: 16 / 10; overflow: hidden; }
+.tx-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s var(--ease); }
+.tx-card:hover .tx-card__media img { transform: scale(1.04); }
+.tx-card__badge {
+  position: absolute; top: 15px; left: 15px;
+  background: rgba(11,19,32,0.78); color: var(--gold-soft);
+  font-family: var(--sans); font-size: 0.64rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 7px 13px; border: 1px solid rgba(198,162,76,0.45); border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+.tx-card__body { padding: 26px 28px 30px; text-align: center; }
+.tx-card__amount { font-family: var(--serif); font-size: 2.1rem; color: var(--ivory); margin: 0; line-height: 1; }
+.tx-card__loc { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--gold-soft); margin: 8px 0 0; }
+.tx-card__tags {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  margin: 18px 0 0; padding: 16px 0 0; list-style: none;
+  border-top: 1px solid rgba(246,242,234,0.10);
+}
+.tx-card__tags li { font-family: var(--sans); font-size: 0.76rem; letter-spacing: 0.04em; color: rgba(246,242,234,0.78); }
+.tx-card__tags li:not(:last-child)::after { content: "·"; margin: 0 10px; color: var(--gold-deep); }
+.tx-card__terms { margin: 16px 0 0; font-family: var(--sans); font-size: 0.9rem; font-weight: 600; letter-spacing: 0.04em; color: var(--gold); }
+.tx__note { margin: 36px auto 0; max-width: 640px; text-align: center; font-size: 0.76rem; color: var(--muted); }
+@media (max-width: 980px) {
+  .tx__grid { grid-template-columns: 1fr; gap: 24px; max-width: 440px; margin: 0 auto; }
+  .tx-card__amount { font-size: 2.4rem; }
+}
+
 /* ---------- FAQ ---------- */
 .faq__head { max-width: 720px; margin: 0 0 36px; }
 .faq__list { max-width: 860px; }
