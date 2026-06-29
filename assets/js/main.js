@@ -157,6 +157,54 @@
     });
   }
 
+  /* ---- Newsletter signup ("The Capital Brief") → same relay, contact-only ---- */
+  var nlForm = document.getElementById("newsletterForm");
+  var nlNote = document.getElementById("newsletterNote");
+  if (nlForm) {
+    nlForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var email = (document.getElementById("nlEmail").value || "").trim();
+      var first = (document.getElementById("nlFirst").value || "").trim();
+      if (!email) {
+        nlNote.style.color = "#E2A0A0";
+        nlNote.textContent = "Please enter your email to subscribe.";
+        return;
+      }
+      var nlBtn = nlForm.querySelector('button[type="submit"]');
+      var nlLabel = nlBtn ? nlBtn.textContent : "";
+      if (nlBtn) { nlBtn.disabled = true; nlBtn.textContent = "Subscribing…"; }
+      nlNote.style.color = ""; nlNote.textContent = "";
+
+      fetch(RELAY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstname: first, lastname: "", email: email,
+          newsletter: true,
+          message: "Newsletter subscription — The Regal Capital Brief",
+          financing_type: "Newsletter Subscriber",
+          pageUri: location.href
+        })
+      }).then(function (res) {
+        return res.json().then(function (d) {
+          if (res.ok && d && d.ok) {
+            track("Subscribe", { content_name: "The Regal Capital Brief" });
+            nlNote.style.color = "";
+            nlNote.textContent = "You're in — the next issue of The Regal Capital Brief is on its way.";
+            nlForm.reset();
+          } else {
+            throw new Error((d && d.error) || ("HTTP " + res.status));
+          }
+        });
+      }).catch(function () {
+        nlNote.style.color = "#E2A0A0";
+        nlNote.textContent = "Sorry — something went wrong. Please email info@regalgroupintl.com to subscribe.";
+      }).then(function () {
+        if (nlBtn) { nlBtn.disabled = false; nlBtn.textContent = nlLabel; }
+      });
+    });
+  }
+
   /* ---- High-intent click tracking for Meta (Apply + checklist downloads) ---- */
   document.querySelectorAll('a[href*="floify.com"], a.apply-cta').forEach(function (a) {
     a.addEventListener("click", function () {

@@ -613,6 +613,21 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .footer__brand { display: flex; gap: 14px; align-items: center; }
 .footer__brand strong { color: var(--ivory); letter-spacing: 0.1em; font-size: 0.82rem; }
 .footer__brand small { color: var(--muted); }
+.footer__yt {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 16px; padding: 8px 14px 8px 10px;
+  border: 1px solid rgba(198,162,76,0.32); border-radius: 999px;
+  transition: border-color 0.3s, background 0.3s;
+}
+.footer__yt svg { width: 22px; height: 22px; flex: none; fill: var(--gold-soft); transition: fill 0.3s; }
+.footer__yt span { display: flex; flex-direction: column; line-height: 1.25; }
+.footer__yt strong {
+  color: var(--ivory); font-family: var(--serif);
+  font-size: 0.92rem; letter-spacing: 0.02em; font-weight: 500;
+}
+.footer__yt small { color: var(--gold-soft); font-size: 0.68rem; letter-spacing: 0.06em; }
+.footer__yt:hover { border-color: var(--gold-soft); background: rgba(198,162,76,0.08); }
+.footer__yt:hover svg { fill: var(--gold); }
 .footer__heading {
   font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
   color: var(--gold-soft); font-weight: 500; margin: 0 0 16px;
@@ -668,6 +683,40 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   .process__steps { grid-template-columns: 1fr; }
   .field--split { grid-template-columns: 1fr; }
   .hero { padding-top: 120px; }
+}
+
+/* ---- Newsletter — The Capital Brief ---- */
+.newsletter__inner { max-width: 680px; margin: 0 auto; text-align: center; }
+.newsletter__inner .section__intro { margin-left: auto; margin-right: auto; }
+.newsletter__form {
+  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;
+  margin: 28px auto 0; max-width: 600px;
+}
+.newsletter__form input {
+  flex: 1 1 200px; min-width: 0;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--sans); font-size: 0.98rem;
+  padding: 13px 15px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.newsletter__form input:focus {
+  outline: none;
+  border-color: var(--gold-deep);
+  box-shadow: 0 0 0 3px rgba(198,162,76,0.18);
+}
+.newsletter__form .btn { flex: 0 0 auto; }
+.newsletter__note { margin: 16px 0 0; font-size: 0.92rem; min-height: 1.2em; }
+.newsletter__fine {
+  margin: 14px 0 0; font-size: 0.74rem; letter-spacing: 0.04em;
+  color: var(--muted); text-transform: none;
+}
+@media (max-width: 560px) {
+  .newsletter__form { flex-direction: column; }
+  .newsletter__form input { flex: 0 0 auto; width: 100%; }
+  .newsletter__form .btn { width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
