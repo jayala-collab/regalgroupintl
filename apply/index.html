@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loan Application — Regal Group International</title>
+  <meta name="description" content="Apply securely for commercial, residential, construction, bridge, aircraft and maritime financing with Regal Group International." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/apply/portal.css?v=20260928" />
+</head>
+<body>
+  <header class="ph">
+    <div class="ph__in">
+      <a class="ph__logo" href="/"><img src="/assets/img/regal-logo.png" alt="Regal Group International" /></a>
+      <span class="ph__tag">Secure Application</span>
+      <nav class="ph__right">
+        <a href="/apply/portal.html">Already applied? Sign in</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <p class="eyebrow">Private Capital · Loan Application</p>
+    <h1>Apply for financing</h1>
+    <p class="lead">About 10 minutes. Your progress saves on this device as you go (sensitive fields excepted).</p>
+
+    <div class="app">
+      <aside class="card steps" aria-label="Application steps">
+        <ol id="stepList"></ol>
+        <div class="steps__secure">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <span>Encrypted in transit and at rest. SSN and date of birth are stored encrypted and never shared outside Regal and your lender.</span>
+        </div>
+      </aside>
+
+      <form class="card card__pad" id="appForm" novalidate>
+        <div id="formErr" class="notice notice--err" hidden></div>
+        <div class="step__head">
+          <p class="eyebrow" id="stepCount"></p>
+          <h2 id="stepTitle"></h2>
+          <p class="lead" id="stepSub"></p>
+        </div>
+        <div id="review" class="review" hidden></div>
+        <div class="grid" id="fields"></div>
+        <div class="nav-row">
+          <button type="button" class="btn btn--ghost" id="backBtn">Back</button>
+          <span class="saved" id="savedNote"></span>
+          <button type="submit" class="btn btn--gold" id="nextBtn">Continue</button>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <p class="foot">Regal Group International · 2525 Ponce de Leon Blvd, Suite 300, Coral Gables, FL 33134 · (786) 247-0244<br />
+    Submitting an application is not a commitment to lend. All financing is subject to underwriting and lender approval.</p>
+
+  <script src="/apply/config.js?v=20260928"></script>
+  <script src="/apply/schema.js?v=20260928"></script>
+  <script src="/apply/apply.js?v=20260928"></script>
+</body>
+</html>

@@ -206,9 +206,9 @@
   }
 
   /* ---- High-intent click tracking for Meta (Apply + checklist downloads) ---- */
-  document.querySelectorAll('a[href*="floify.com"], a.apply-cta').forEach(function (a) {
+  document.querySelectorAll('a[href^="/apply"], a.apply-cta').forEach(function (a) {
     a.addEventListener("click", function () {
-      track("InitiateCheckout", { content_name: "Apply — Floify" });
+      track("InitiateCheckout", { content_name: "Apply — Regal portal" });
     });
   });
   document.querySelectorAll("a.card-doc").forEach(function (a) {

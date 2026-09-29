@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pipeline Admin — Regal Group International</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/apply/portal.css?v=20260928" />
+</head>
+<body>
+  <header class="ph">
+    <div class="ph__in">
+      <a class="ph__logo" href="/"><img src="/assets/img/regal-logo.png" alt="Regal Group International" /></a>
+      <span class="ph__tag">Pipeline Admin</span>
+      <nav class="ph__right">
+        <a href="#" id="homeLink" hidden>All applications</a>
+        <button class="btn btn--ghost btn--sm" id="logoutBtn" style="color:var(--ivory);border-color:rgba(198,162,76,.4)" hidden>Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap wrap--narrow" id="loginView" hidden>
+    <div class="card card__pad">
+      <p class="eyebrow">Restricted</p>
+      <h1>Admin sign-in</h1>
+      <div id="loginErr" class="notice notice--err" hidden style="margin-top:18px"></div>
+      <form id="pwForm" class="stack" style="margin-top:20px">
+        <div class="f"><label for="pw">Password</label><input type="password" id="pw" autocomplete="current-password" /></div>
+        <button class="btn btn--gold" style="width:100%">Continue</button>
+      </form>
+      <form id="codeForm" class="stack" style="margin-top:20px" hidden>
+        <p class="small muted" id="codeInfo">A sign-in code was sent to the admin mailbox.</p>
+        <div class="f"><label for="code">6-digit code</label><input type="text" id="code" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" /></div>
+        <button class="btn btn--gold" style="width:100%">Sign in</button>
+      </form>
+    </div>
+  </main>
+
+  <main class="wrap" id="listView" hidden>
+    <p class="eyebrow">Online applications</p>
+    <h1>Pipeline</h1>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Search name, email, ref…" />
+      <select id="stageFilter"><option value="">All stages</option></select>
+      <span class="muted small" id="count"></span>
+    </div>
+    <div class="card table-wrap"><table class="t"><thead><tr>
+      <th>Ref</th><th>Borrower</th><th>Program</th><th>Amount</th><th>Stage</th><th>Docs</th><th>Submitted</th>
+    </tr></thead><tbody id="rows"></tbody></table></div>
+  </main>
+
+  <main class="wrap" id="detailView" hidden></main>
+  <main class="wrap center" id="loadingView"><span class="spinner"></span></main>
+
+  <script src="/apply/config.js?v=20260928"></script>
+  <script src="/apply/schema.js?v=20260928"></script>
+  <script src="/apply/admin.js?v=20260928"></script>
+</body>
+</html>

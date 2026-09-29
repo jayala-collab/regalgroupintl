@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loan Portal — Regal Group International</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/apply/portal.css?v=20260928" />
+</head>
+<body>
+  <header class="ph">
+    <div class="ph__in">
+      <a class="ph__logo" href="/"><img src="/assets/img/regal-logo.png" alt="Regal Group International" /></a>
+      <span class="ph__tag">Loan Portal</span>
+      <nav class="ph__right">
+        <span class="ph__who" id="who"></span>
+        <button class="btn btn--ghost btn--sm" id="logoutBtn" style="color:var(--ivory);border-color:rgba(198,162,76,.4)" hidden>Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Sign in -->
+  <main class="wrap wrap--narrow" id="loginView" hidden>
+    <div class="card card__pad">
+      <p class="eyebrow">Borrower sign-in</p>
+      <h1>Your loan portal</h1>
+      <p class="lead" id="loginLead">Enter the email you applied with and we'll send you a 6-digit sign-in code.</p>
+      <div id="loginErr" class="notice notice--err" hidden style="margin-top:18px"></div>
+      <div id="loginInfo" class="notice notice--info" hidden style="margin-top:18px"></div>
+      <form id="emailForm" class="stack" style="margin-top:20px" novalidate>
+        <div class="f"><label for="loginEmail">Email</label><input type="email" id="loginEmail" autocomplete="email" required /></div>
+        <button class="btn btn--gold" type="submit" style="width:100%">Send my code</button>
+      </form>
+      <form id="codeForm" class="stack" style="margin-top:20px" novalidate hidden>
+        <div class="f"><label for="loginCode">6-digit code</label><input type="text" id="loginCode" class="code-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" /></div>
+        <button class="btn btn--gold" type="submit" style="width:100%">Sign in</button>
+        <button class="linkbtn" type="button" id="resendBtn">Use a different email / resend code</button>
+      </form>
+      <p class="small muted" style="margin-top:24px">Haven't applied yet? <a href="/apply/">Start an application</a>.</p>
+    </div>
+  </main>
+
+  <!-- Dashboard -->
+  <main class="wrap" id="dashView" hidden>
+    <div id="welcome" class="notice notice--ok" hidden></div>
+    <div id="appTabs" class="toolbar" hidden></div>
+    <section class="card card__pad" id="loanHead"></section>
+    <div class="pgrid">
+      <section class="card card__pad" id="needs"></section>
+      <aside class="stack side">
+        <div class="card card__pad">
+          <h3>Your loan advisor</h3>
+          <div class="contact">
+            <img src="/assets/img/juan-ayala.jpg" alt="Juan Ayala" />
+            <p><strong>Juan Ayala</strong><br />Principal<br /><a href="tel:+17862470244">(786) 247-0244</a><br /><a href="mailto:j.ayala@regalgroupintl.com">j.ayala@regalgroupintl.com</a></p>
+          </div>
+        </div>
+        <div class="card card__pad small">
+          <h3>Upload tips</h3>
+          <p class="muted" style="margin:0">PDF preferred; clear phone photos are fine. Up to 25 MB per file. You can drag files onto any item. Include all pages of statements, even blank ones.</p>
+        </div>
+        <div class="card card__pad small">
+          <h3>Another deal?</h3>
+          <p class="muted" style="margin:0 0 12px">Apply again with the same email and it will appear here.</p>
+          <a class="btn btn--ghost btn--sm" href="/apply/">New application</a>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <main class="wrap center" id="loadingView"><span class="spinner"></span></main>
+
+  <p class="foot">Regal Group International · Coral Gables, FL · Your documents are stored encrypted and shared only with Regal and your lender.</p>
+
+  <script src="/apply/config.js?v=20260928"></script>
+  <script src="/apply/schema.js?v=20260928"></script>
+  <script src="/apply/portal.js?v=20260928"></script>
+</body>
+</html>
