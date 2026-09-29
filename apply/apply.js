@@ -233,10 +233,11 @@
 
     el.next.disabled = true;
     el.next.innerHTML = '<span class="spinner"></span> Submitting…';
-    R.api("/api/applications", { json: { fields: out, summary: R.summarize(out) } }).then(function (res) {
+    var attribution = window.RegalAttribution ? window.RegalAttribution() : {};
+    R.api("/api/applications", { json: { fields: out, summary: R.summarize(out), attribution: attribution } }).then(function (res) {
       if (res.ok) {
         try { localStorage.removeItem(DRAFT_KEY); sessionStorage.setItem("regal_token", res.token); } catch (err) {}
-        location.href = "/apply/portal.html?welcome=" + encodeURIComponent(res.ref) + "#" + res.id;
+        location.href = "/apply/portal.html?welcome=" + encodeURIComponent(res.ref) + "&program=" + encodeURIComponent(out.loan_type) + "#" + res.id;
         return;
       }
       el.err.textContent = res.error || "We couldn't submit your application. Please try again or call (786) 247-0244.";

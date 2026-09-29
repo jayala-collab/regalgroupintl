@@ -10,10 +10,10 @@
   var $ = function (id) { return document.getElementById(id); };
 
   function show(view) {
-    ["loginView", "listView", "detailView", "loadingView"].forEach(function (v) { $(v).hidden = v !== view; });
-    var authed = view === "listView" || view === "detailView";
+    ["loginView", "listView", "detailView", "partnersView", "loadingView"].forEach(function (v) { $(v).hidden = v !== view; });
+    var authed = view === "listView" || view === "detailView" || view === "partnersView";
     $("logoutBtn").hidden = !authed;
-    $("homeLink").hidden = view !== "detailView";
+    $("homeLink").hidden = view !== "detailView" && view !== "partnersView";
   }
   function api(path, opts) {
     opts = opts || {}; opts.token = token;
@@ -62,7 +62,7 @@
   function route() {
     if (!token) return show("loginView");
     var id = location.hash.slice(1);
-    if (id) loadDetail(id); else loadList();
+    if (id === "partners") loadPartners(); else if (id) loadDetail(id); else loadList();
   }
 
   /* ---------- list ---------- */
@@ -85,7 +85,7 @@
     var rows = apps.filter(function (a) {
       if (st && a.stage_id !== st) return false;
       if (!q) return true;
-      return [a.ref, a.first_name, a.last_name, a.email, a.loan_type_label].join(" ").toLowerCase().indexOf(q) !== -1;
+      return [a.ref, a.first_name, a.last_name, a.email, a.loan_type_label, a.source_label].join(" ").toLowerCase().indexOf(q) !== -1;
     });
     $("count").textContent = rows.length + " of " + apps.length;
     $("rows").innerHTML = rows.length ? rows.map(function (a) {
@@ -93,10 +93,11 @@
       return '<tr data-id="' + a.id + '"><td><strong>' + esc(a.ref) + "</strong></td><td>" + esc(a.first_name + " " + a.last_name) +
         '<br><span class="muted small">' + esc(a.email) + "</span></td><td>" + esc(a.loan_type_label) +
         '<br><span class="muted small">' + esc(a.loan_purpose || "") + "</span></td><td>" + esc(R.money(a.loan_amount)) +
+        '</td><td class="small">' + esc(a.source_label || "Direct") +
         "</td><td>" + (a.hs_error ? '<span class="pill pill--warn" title="' + esc(a.hs_error) + '">CRM sync failed</span>' : '<span class="pill">' + esc(a.stage_label || "—") + "</span>") +
         "</td><td>" + a.doc_count + pend + (a.last_upload ? '<br><span class="muted small">last ' + R.fmtDate(a.last_upload) + "</span>" : "") +
         "</td><td>" + R.fmtDate(a.created_at) + "</td></tr>";
-    }).join("") : '<tr><td colspan="7" class="muted center" style="padding:40px">No applications yet.</td></tr>';
+    }).join("") : '<tr><td colspan="8" class="muted center" style="padding:40px">No applications yet.</td></tr>';
   }
   $("rows").addEventListener("click", function (e) {
     var tr = e.target.closest("tr[data-id]");
@@ -167,7 +168,7 @@
       '</div><div class="review">' + sections + "</div></section>" +
       '<section class="card card__pad"><h2>Documents</h2>' + docsHtml +
       '<div class="needs__sec" style="padding-top:14px"><label class="btn btn--ghost btn--sm upl">Upload a file to this loan<input type="file" id="adminUpload" multiple /></label></div></section>' +
-      "</div><aside class=\"stack\">" +
+      "</div><aside class=\"stack\">" + sourceCard(a) +
       '<section class="card card__pad"><h3>Stage</h3><p class="small muted" style="margin:0 0 10px">Syncs to the HubSpot deal; the borrower sees it in their portal.</p>' +
       '<select id="stageSel">' + stageOpts + '</select><button class="btn btn--navy btn--sm" id="stageBtn" style="margin-top:10px;width:100%">Update stage</button></section>' +
       '<section class="card card__pad"><h3>Request a document</h3><form id="itemForm" class="stack">' +
@@ -236,6 +237,77 @@
       })(0);
     };
   }
+
+  function sourceCard(a) {
+    var src = a.source || {}, rows = "";
+    [["Most recent visit", src.last], ["First visit", src.first]].forEach(function (pair) {
+      var t = pair[1];
+      if (!t || (pair[0] === "First visit" && src.last && JSON.stringify(t) === JSON.stringify(src.last))) return;
+      var bits = [];
+      ["ref", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) {
+        if (t[k]) bits.push(k.replace("utm_", "") + ": " + t[k]);
+      });
+      if (t.gclid) bits.push("Google Ads click");
+      if (t.fbclid) bits.push("Facebook/Instagram click");
+      if (t.referrer) bits.push("from " + t.referrer);
+      if (t.landing) bits.push("landed on " + t.landing);
+      if (t.at) bits.push(new Date(t.at * 1000).toLocaleDateString());
+      rows += '<p class="small" style="margin:8px 0 0"><strong>' + pair[0] + ":</strong> " + esc(bits.join(" · ") || "direct visit") + "</p>";
+    });
+    return '<section class="card card__pad"><h3>Source</h3><p style="margin:0;font-weight:600">' + esc(a.source_label || "Direct") + "</p>" + rows + "</section>";
+  }
+
+  /* ---------- referral partners ---------- */
+  var partnerData = null;
+  function loadPartners() {
+    show("loadingView");
+    api("/api/admin/partners").then(function (res) {
+      if (!res.ok) return alert(res.error);
+      partnerData = res; renderPartners(); show("partnersView");
+    }).catch(function () {});
+  }
+  function partnerLink(code) {
+    var site = (partnerData && partnerData.site) || location.origin;
+    return $("linkTarget").value === "home" ? site + "/?ref=" + code : site + "/apply/?ref=" + code;
+  }
+  function renderPartners() {
+    var list = partnerData.partners;
+    $("partnerRows").innerHTML = list.length ? list.map(function (p) {
+      return "<tr><td><strong>" + esc(p.name) + "</strong>" + (p.firm ? '<br><span class="muted small">' + esc(p.firm) + "</span>" : "") +
+        (p.kind ? '<br><span class="pill">' + esc(p.kind) + "</span>" : "") +
+        '</td><td class="small"><code>' + esc(partnerLink(p.code)) + '</code><br><button class="linkbtn" data-copy="' + esc(p.code) + '">Copy link</button></td>' +
+        "<td>" + p.apps + "</td><td>" + p.funded + "</td><td>" + esc(R.money(p.volume) || "—") + '</td><td class="small">' +
+        (p.last_app ? R.fmtDate(p.last_app) : "—") + '</td><td><button class="linkbtn" data-rm-partner="' + esc(p.code) + '">Remove</button></td></tr>';
+    }).join("") : '<tr><td colspan="7" class="muted center" style="padding:32px">No partners yet — add your first one on the right.</td></tr>';
+    var u = partnerData.unknown || [];
+    $("unknownCodes").hidden = !u.length;
+    $("unknownCodes").innerHTML = u.length ? "<strong>Unregistered codes seen on applications:</strong> " +
+      u.map(function (x) { return "<code>" + esc(x.code) + "</code> (" + x.apps + ")"; }).join(", ") +
+      '<br><span class="muted">Add a partner with the same code to credit them.</span>' : "";
+  }
+  $("linkTarget").addEventListener("change", function () { if (partnerData) renderPartners(); });
+  $("partnerRows").addEventListener("click", function (e) {
+    var c = e.target.closest("[data-copy]"), rm = e.target.closest("[data-rm-partner]");
+    if (c) {
+      var link = partnerLink(c.dataset.copy);
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () {
+        c.textContent = "Copied ✓"; setTimeout(function () { c.textContent = "Copy link"; }, 1500);
+      }, function () { prompt("Copy this link:", link); });
+    }
+    if (rm && confirm("Remove this partner? Past applications keep their code.")) {
+      api("/api/admin/partners/" + rm.dataset.rmPartner, { method: "DELETE" }).then(loadPartners).catch(function () {});
+    }
+  });
+  $("partnerForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var btn = e.target.querySelector("button"); btn.disabled = true;
+    api("/api/admin/partners", { json: { name: $("pName").value, firm: $("pFirm").value, kind: $("pKind").value, email: $("pEmail").value } })
+      .then(function (res) {
+        btn.disabled = false;
+        if (!res.ok) return alert(res.error);
+        e.target.reset(); loadPartners();
+      }).catch(function () { btn.disabled = false; });
+  });
 
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-doc]");

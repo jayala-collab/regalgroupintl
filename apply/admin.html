@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/apply/portal.css?v=20260928" />
+  <link rel="stylesheet" href="/apply/portal.css?v=20260929" />
 </head>
 <body>
   <header class="ph">
@@ -47,17 +47,53 @@
       <input type="search" id="q" placeholder="Search name, email, ref…" />
       <select id="stageFilter"><option value="">All stages</option></select>
       <span class="muted small" id="count"></span>
+      <a class="btn btn--navy btn--sm" href="#partners" style="margin-left:auto">Referral partners</a>
     </div>
     <div class="card table-wrap"><table class="t"><thead><tr>
-      <th>Ref</th><th>Borrower</th><th>Program</th><th>Amount</th><th>Stage</th><th>Docs</th><th>Submitted</th>
+      <th>Ref</th><th>Borrower</th><th>Program</th><th>Amount</th><th>Source</th><th>Stage</th><th>Docs</th><th>Submitted</th>
     </tr></thead><tbody id="rows"></tbody></table></div>
   </main>
 
   <main class="wrap" id="detailView" hidden></main>
+
+  <main class="wrap" id="partnersView" hidden>
+    <p class="small"><a href="#">&larr; All applications</a></p>
+    <p class="eyebrow">Referral partners</p>
+    <h1>Partners</h1>
+    <p class="lead">Give each partner their own link. Every application that comes through it is credited to them here, in your notification email, and on the HubSpot deal.</p>
+    <div class="detail" style="margin-top:24px">
+      <section class="stack">
+        <div class="card card__pad">
+          <div class="toolbar" style="margin:0 0 8px">
+            <label class="small" for="linkTarget" style="font-weight:600">Copied links go to</label>
+            <select id="linkTarget">
+              <option value="apply">Loan application (borrower picks program)</option>
+              <option value="home">Homepage</option>
+            </select>
+          </div>
+          <div class="table-wrap"><table class="t" id="partnerTable"><thead><tr>
+            <th>Partner</th><th>Link</th><th>Applications</th><th>Funded</th><th>Volume</th><th>Last</th><th></th>
+          </tr></thead><tbody id="partnerRows"></tbody></table></div>
+        </div>
+        <div class="card card__pad small" id="unknownCodes" hidden></div>
+      </section>
+      <aside class="card card__pad">
+        <h3>Add a partner</h3>
+        <form id="partnerForm" class="stack" style="margin-top:12px">
+          <div class="f"><label for="pName">Name</label><input type="text" id="pName" placeholder="Maria Lopez" required /></div>
+          <div class="f"><label for="pFirm">Firm (optional)</label><input type="text" id="pFirm" placeholder="Lopez &amp; Partners CPA" /></div>
+          <div class="f"><label for="pKind">Type</label>
+            <select id="pKind"><option>CPA</option><option>Attorney</option><option>Realtor</option><option>Aircraft broker</option><option>Yacht broker</option><option>Financial advisor</option><option>Past client</option><option>Other</option></select></div>
+          <div class="f"><label for="pEmail">Email (optional)</label><input type="email" id="pEmail" /></div>
+          <button class="btn btn--gold btn--sm" style="width:100%">Create partner link</button>
+        </form>
+      </aside>
+    </div>
+  </main>
   <main class="wrap center" id="loadingView"><span class="spinner"></span></main>
 
-  <script src="/apply/config.js?v=20260928"></script>
+  <script src="/apply/config.js?v=20260929"></script>
   <script src="/apply/schema.js?v=20260928"></script>
-  <script src="/apply/admin.js?v=20260928"></script>
+  <script src="/apply/admin.js?v=20260929"></script>
 </body>
 </html>

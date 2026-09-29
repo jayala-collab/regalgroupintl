@@ -80,8 +80,10 @@
       if (!res.apps.length) { show("loginView"); return loginErr("No applications found for this email."); }
       var hashId = location.hash.slice(1);
       curId = res.apps.some(function (a) { return a.id === hashId; }) ? hashId : res.apps[0].id;
-      var welcome = new URLSearchParams(location.search).get("welcome");
+      var qs = new URLSearchParams(location.search);
+      var welcome = qs.get("welcome");
       if (welcome) {
+        trackLead(qs.get("program"));
         $("welcome").hidden = false;
         $("welcome").innerHTML = "<strong>Application " + esc(welcome) + " received.</strong> Thank you — Juan will review it personally. " +
           "Next, upload the documents below. You can come back any time and sign in with your email.";
@@ -90,6 +92,23 @@
       render();
       show("dashView");
     });
+  }
+
+  /* Meta Pixel "Lead" after a submitted application. Loaded only here — never on the
+     application form — with automatic field/click capture disabled, and no PII sent. */
+  function trackLead(program) {
+    var id = window.META_PIXEL_ID;
+    if (!id || !/^\d+$/.test(id)) return;
+    /* eslint-disable */
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    /* eslint-enable */
+    window.fbq("set", "autoConfig", false, id);
+    window.fbq("init", id);
+    window.fbq("track", "Lead", { content_name: "Loan application", content_category: program || "unknown" });
   }
 
   function curApp() { return me.apps.filter(function (a) { return a.id === curId; })[0]; }
