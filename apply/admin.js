@@ -168,7 +168,7 @@
       '</div><div class="review">' + sections + "</div></section>" +
       '<section class="card card__pad"><h2>Documents</h2>' + docsHtml +
       '<div class="needs__sec" style="padding-top:14px"><label class="btn btn--ghost btn--sm upl">Upload a file to this loan<input type="file" id="adminUpload" multiple /></label></div></section>' +
-      "</div><aside class=\"stack\">" + sourceCard(a) +
+      "</div><aside class=\"stack\">" + exportCard(a) + sourceCard(a) +
       '<section class="card card__pad"><h3>Stage</h3><p class="small muted" style="margin:0 0 10px">Syncs to the HubSpot deal; the borrower sees it in their portal.</p>' +
       '<select id="stageSel">' + stageOpts + '</select><button class="btn btn--navy btn--sm" id="stageBtn" style="margin-top:10px;width:100%">Update stage</button></section>' +
       '<section class="card card__pad"><h3>Request a document</h3><form id="itemForm" class="stack">' +
@@ -236,6 +236,13 @@
         });
       })(0);
     };
+  }
+
+  function exportCard(a) {
+    return '<section class="card card__pad"><h3>Loan files</h3>' +
+      '<p class="small muted" style="margin:0 0 12px">Fannie Mae ULAD / MISMO 3.4 — imports into Calyx Point, Arive and LendingPad. Contains SSN; each download is logged.</p>' +
+      '<button class="btn btn--navy btn--sm" style="width:100%" data-export="mismo.xml">Download MISMO 3.4 XML</button>' +
+      "</section>";
   }
 
   function sourceCard(a) {
@@ -307,6 +314,22 @@
         if (!res.ok) return alert(res.error);
         e.target.reset(); loadPartners();
       }).catch(function () { btn.disabled = false; });
+  });
+
+  document.addEventListener("click", function (e) {
+    var x = e.target.closest("[data-export]");
+    if (!x || !detail) return;
+    var label = x.textContent; x.disabled = true; x.textContent = "Preparing…";
+    R.api("/api/admin/applications/" + detail.app.id + "/" + x.dataset.export, { token: token, raw: true }).then(function (res) {
+      x.disabled = false; x.textContent = label;
+      if (!res || !res.ok) return alert("Couldn't generate that file.");
+      var name = ((res.headers.get("Content-Disposition") || "").match(/filename="([^"]+)"/) || [])[1] || detail.app.ref + "." + x.dataset.export.split(".").pop();
+      return res.blob().then(function (blob) {
+        var url = URL.createObjectURL(blob), link = document.createElement("a");
+        link.href = url; link.download = name; document.body.appendChild(link); link.click();
+        setTimeout(function () { URL.revokeObjectURL(url); link.remove(); }, 1000);
+      });
+    });
   });
 
   document.addEventListener("click", function (e) {

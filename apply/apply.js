@@ -5,7 +5,7 @@
   "use strict";
   var R = window.Regal, esc = R.esc;
   var DRAFT_KEY = "regal_app_draft_v1";
-  var NO_DRAFT = /^(b_ssn|c_ssn|b_dob|c_dob|e_ein|consent_.*|sign_name|sign_date)$/;
+  var NO_DRAFT = /^(b_ssn|c_ssn|b_dob|c_dob|e_ein|consent_.*|sign_name|sign_date|c?dm_.*)$/;
 
   var v = {};
   var cur = 0;
@@ -56,6 +56,8 @@
 
   function fieldHTML(f, i) {
     if (f.t === "heading") return '<h3 class="heading" data-fi="' + i + '">' + esc(f.l) + "</h3>";
+    if (f.t === "note") return '<p class="notebox" data-fi="' + i + '">' + esc(f.l) + "</p>";
+    if (f.t === "list") return listHTML(f, i);
     var id = "f_" + f.n, val = v[f.n] == null ? "" : String(v[f.n]);
     var cls = "f" + (f.half ? " f--half" : "") + (f.third ? " f--third" : "") + (f.t === "radio" ? " f--radio" : "");
     var help = f.help ? '<span class="f__help">' + esc(f.help) + "</span>" : "";
@@ -77,6 +79,13 @@
           return '<label><input type="radio" name="' + f.n + '" value="' + esc(ov) + '"' + (val === ov ? " checked" : "") + " />" + esc(o) + "</label>";
         }).join("") + "</div>";
         return '<div class="' + cls + '" data-fi="' + i + '"><span class="f__label">' + esc(f.l) + reqMark(f) + "</span>" + input + errs + "</div>";
+      case "multi":
+        var chosen = val ? val.split("; ") : [];
+        input = '<div class="multis">' + f.opts.map(function (o) {
+          return '<label class="mchk"><input type="checkbox" name="' + f.n + '" value="' + esc(o) + '"' + (chosen.indexOf(o) !== -1 ? " checked" : "") +
+            " /><span>" + esc(o) + "</span></label>";
+        }).join("") + "</div>";
+        return '<div class="' + cls + '" data-fi="' + i + '"><span class="f__label">' + esc(f.l) + reqMark(f) + "</span>" + input + help + errs + "</div>";
       case "check":
         return '<div class="' + cls + '" data-fi="' + i + '"><label class="check"><input type="checkbox" name="' + f.n + '"' +
           (val === "yes" ? " checked" : "") + " /><span>" + esc(f.l) + "</span></label>" + errs + "</div>";
@@ -107,6 +116,30 @@
     return '<div class="' + cls + '" data-fi="' + i + '"><label for="' + id + '">' + esc(f.l) + reqMark(f) + lock(f) + "</label>" + input + help + errs + "</div>";
   }
 
+  /* Repeatable rows (accounts, debts, properties). State: v[list] = [{sub: value}, …] */
+  function listHTML(f, i) {
+    if (!Array.isArray(v[f.n]) || !v[f.n].length) v[f.n] = [{}];
+    var rows = v[f.n].map(function (row, ri) {
+      return '<div class="lrow">' + f.fields.map(function (sf) {
+        var nm = f.n + "." + ri + "." + sf.n, raw = row[sf.n] == null ? "" : String(row[sf.n]), inp;
+        if (sf.t === "select") {
+          inp = '<select name="' + nm + '"><option value="">Select…</option>' + sf.opts.map(function (o) {
+            return "<option" + (raw === o ? " selected" : "") + ">" + esc(o) + "</option>";
+          }).join("") + "</select>";
+        } else if (sf.t === "money") {
+          inp = '<div class="money"><input type="text" inputmode="numeric" name="' + nm + '" value="' + esc(fmtNum(raw)) + '" /></div>';
+        } else {
+          inp = '<input type="text" name="' + nm + '" value="' + esc(raw) + '" />';
+        }
+        return '<label class="lf' + (sf.wide ? " lf--wide" : "") + '"><span>' + esc(sf.l) + "</span>" + inp + "</label>";
+      }).join("") + '<button type="button" class="linkbtn lrow__rm" data-rm="' + f.n + '" data-ri="' + ri + '">Remove</button></div>';
+    }).join("");
+    return '<div class="f" data-fi="' + i + '"><span class="f__label">' + esc(f.l) + reqMark(f) + "</span>" +
+      (f.help ? '<span class="f__help">' + esc(f.help) + "</span>" : "") + '<div class="lrows">' + rows + "</div>" +
+      '<button type="button" class="btn btn--ghost btn--sm lrow__add" data-add="' + f.n + '">+ ' + esc(f.add || "Add another") + "</button>" +
+      '<span class="f__err"></span></div>';
+  }
+
   function fmtNum(s) { var d = String(s || "").replace(/\D/g, ""); return d ? Number(d).toLocaleString("en-US") : ""; }
   function fmtSSN(s) { var d = String(s || "").replace(/\D/g, "").slice(0, 9); return d.length > 5 ? d.slice(0, 3) + "-" + d.slice(3, 5) + "-" + d.slice(5) : d.length > 3 ? d.slice(0, 3) + "-" + d.slice(3) : d; }
   function fmtEIN(s) { var d = String(s || "").replace(/\D/g, "").slice(0, 9); return d.length > 2 ? d.slice(0, 2) + "-" + d.slice(2) : d; }
@@ -123,7 +156,9 @@
   function renderReview() {
     var steps = visibleSteps();
     el.review.innerHTML = steps.slice(0, -1).map(function (s, si) {
-      var rows = s.fields.filter(function (f) { return f.n && R.fieldVisible(f, v) && v[f.n]; }).map(function (f) {
+      var rows = s.fields.filter(function (f) {
+        return f.n && R.fieldVisible(f, v) && (f.t === "list" ? filledRows(v[f.n]).length : v[f.n]);
+      }).map(function (f) {
         var d = f.t === "ssn" ? "•••-••-" + String(v[f.n]).slice(-4) : f.t === "ein" ? "••-•••" + String(v[f.n]).slice(-4) : R.display(f, v[f.n]);
         return "<dt>" + esc(f.l) + "</dt><dd>" + esc(d) + "</dd>";
       }).join("");
@@ -146,7 +181,7 @@
     el.count.textContent = "Step " + (cur + 1) + " of " + steps.length;
     el.title.textContent = s.title;
     el.sub.textContent = s.sub || "";
-    el.fields.innerHTML = s.fields.map(fieldHTML).join("");
+    renderFields();
     el.review.hidden = !s.review;
     if (s.review) renderReview();
     el.back.style.visibility = cur === 0 ? "hidden" : "visible";
@@ -158,16 +193,44 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function renderFields() {
+    el.fields.innerHTML = visibleSteps()[cur].fields.map(fieldHTML).join("");
+    applyVisibility();
+  }
+
   el.back.addEventListener("click", function () { go(cur - 1); });
+
+  el.fields.addEventListener("click", function (e) {
+    var add = e.target.closest("[data-add]"), rm = e.target.closest("[data-rm]");
+    if (!add && !rm) return;
+    if (add) v[add.dataset.add].push({});
+    else { v[rm.dataset.rm].splice(+rm.dataset.ri, 1); }
+    renderFields();
+    saveDraft();
+  });
 
   el.fields.addEventListener("input", onInput);
   el.fields.addEventListener("change", onInput);
   function onInput(e) {
     var t = e.target;
     if (!t.name) return;
+    if (t.name.indexOf(".") > 0) {
+      var parts = t.name.split("."), lf = findField(parts[0]);
+      var sf = lf && lf.fields.filter(function (x) { return x.n === parts[2]; })[0];
+      var row = lf && v[parts[0]][+parts[1]];
+      if (!sf || !row) return;
+      if (sf.t === "money") { var md = t.value.replace(/\D/g, ""); row[sf.n] = md; if (e.type === "input") t.value = fmtNum(md); }
+      else row[sf.n] = t.value;
+      var ln = t.closest(".f"); if (ln) ln.classList.remove("has-err");
+      if (e.type === "change") saveDraft();
+      return;
+    }
     var f = findField(t.name);
     if (!f) return;
     if (f.t === "check") v[f.n] = t.checked ? "yes" : "";
+    else if (f.t === "multi") {
+      v[f.n] = Array.prototype.map.call(el.fields.querySelectorAll('input[name="' + f.n + '"]:checked'), function (x) { return x.value; }).join("; ");
+    }
     else if (f.t === "money") { var d = t.value.replace(/\D/g, ""); v[f.n] = d; if (e.type === "input") t.value = fmtNum(d); }
     else if (f.t === "ssn") { v[f.n] = t.value.replace(/\D/g, "").slice(0, 9); if (e.type === "input") t.value = fmtSSN(v[f.n]); }
     else if (f.t === "ein") { v[f.n] = t.value.replace(/\D/g, "").slice(0, 9); if (e.type === "input") t.value = fmtEIN(v[f.n]); }
@@ -187,8 +250,8 @@
     var firstBad = null;
     step.fields.forEach(function (f, i) {
       if (!f.n || !R.fieldVisible(f, v)) return;
-      var val = (v[f.n] || "").toString().trim(), msg = "";
-      if (R.when(f.req, v) && !val) msg = f.t === "check" ? "Required to submit." : "Required.";
+      var val = f.t === "list" ? (filledRows(v[f.n]).length ? "x" : "") : (v[f.n] || "").toString().trim(), msg = "";
+      if (R.when(f.req, v) && !val) msg = f.t === "check" ? "Required to submit." : f.t === "list" ? "Add at least one." : f.t === "multi" ? "Select at least one option." : "Required.";
       else if (val) {
         if (f.t === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(val)) msg = "Enter a valid email.";
         if (f.t === "tel" && val.replace(/\D/g, "").length < 10) msg = "Enter a valid phone number.";
@@ -217,6 +280,8 @@
     return !firstBad;
   }
 
+  function filledRows(rows) { return Array.isArray(rows) ? rows.filter(R.rowFilled) : []; }
+
   /* ---------- submit ---------- */
   el.form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -227,7 +292,11 @@
     // Only send fields that are visible in the final answers (drops stale hidden values).
     var out = {};
     steps.forEach(function (st) {
-      st.fields.forEach(function (f) { if (f.n && R.fieldVisible(f, v) && v[f.n]) out[f.n] = v[f.n]; });
+      st.fields.forEach(function (f) {
+        if (!f.n || !R.fieldVisible(f, v)) return;
+        if (f.t === "list") { var rows = filledRows(v[f.n]); if (rows.length) out[f.n] = JSON.stringify(rows); }
+        else if (v[f.n]) out[f.n] = v[f.n];
+      });
     });
     out.b_email = String(out.b_email || "").trim().toLowerCase();
 

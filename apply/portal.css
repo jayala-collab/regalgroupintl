@@ -218,3 +218,17 @@ table.t { width: 100%; border-collapse: collapse; font-size: 14px; background: #
 .foot { text-align: center; font-size: 12px; color: var(--muted); padding: 0 20px 40px; }
 .foot a { color: var(--muted); }
 .code-input { font-size: 26px !important; letter-spacing: 10px; text-align: center; font-variant-numeric: tabular-nums; }
+
+/* ---------- 1003 extras: notices, multi-selects, repeatable rows ---------- */
+.notebox { grid-column: span 6; margin: 0; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line-soft); border-left: 3px solid var(--gold); border-radius: var(--r); font-size: 13px; color: var(--muted); line-height: 1.55; }
+.multis { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 14px; }
+.mchk { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; padding: 7px 10px; border: 1px solid var(--line-soft); border-radius: var(--r); cursor: pointer; }
+.mchk input { width: 17px; height: 17px; margin-top: 2px; accent-color: var(--gold-deep); flex: none; }
+.mchk:has(input:checked) { border-color: var(--gold); background: var(--paper); }
+.lrows { display: flex; flex-direction: column; gap: 10px; }
+.lrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px 12px; padding: 14px; border: 1px solid var(--line); border-radius: var(--r); background: #fff; position: relative; }
+.lf { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--navy-700); min-width: 0; }
+.lf--wide { grid-column: 1 / -1; }
+.lf input, .lf select { min-height: 40px; padding: 8px 10px; font-size: 15px; font-weight: 400; }
+.lrow__rm { position: absolute; top: 8px; right: 12px; font-size: 12px; }
+.lrow__add { align-self: flex-start; margin-top: 4px; }
