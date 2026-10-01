@@ -108,7 +108,13 @@
         { n: "c_dob", l: "Date of birth", t: "date", half: true, pii: true },
         { n: "c_ssn", l: "SSN or ITIN", t: "ssn", half: true, pii: true },
         { n: "c_citizenship", l: "Citizenship", t: "select", half: true, opts: ["U.S. citizen", "Permanent resident", "Non-permanent resident", "Foreign national"] },
-        { n: "c_relationship", l: "Relationship to borrower", t: "text", half: true, ph: "Spouse, partner, guarantor…" }
+        { n: "c_relationship", l: "Relationship to borrower", t: "text", half: true, ph: "Spouse, partner, guarantor…" },
+        { n: "c_marital", l: "Marital status", t: "select", half: true, req: isRes, show: isRes, opts: ["Married", "Unmarried", "Separated"] },
+        { n: "c_same_addr", l: "Does the co-borrower live at the same address as the borrower?", t: "radio", opts: YN, req: isRes, show: isRes },
+        { n: "c_addr", l: "Co-borrower's current address", t: "text", req: function (v) { return isRes(v) && v.c_same_addr === "No"; }, show: function (v) { return isRes(v) && v.c_same_addr === "No"; } },
+        { n: "c_city", l: "City", t: "text", third: true, show: function (v) { return isRes(v) && v.c_same_addr === "No"; } },
+        { n: "c_state", l: "State", t: "state", third: true, show: function (v) { return isRes(v) && v.c_same_addr === "No"; } },
+        { n: "c_zip", l: "ZIP", t: "text", third: true, show: function (v) { return isRes(v) && v.c_same_addr === "No"; } }
       ]
     },
     {
@@ -128,6 +134,8 @@
         { n: "p_year", l: "Year built", t: "number", third: true, show: isRE },
         { n: "p_rent", l: "Gross monthly rent (if income-producing)", t: "money", half: true, show: isRE },
         { n: "p_taxes_ins", l: "Annual taxes + insurance", t: "money", half: true, show: isRE },
+        { n: "p_mixed_use", l: "Mixed-use: will you set aside space in the property to operate your own business (e.g. daycare, medical office, salon)?", t: "radio", opts: YN, req: isRes, show: isRes },
+        { n: "p_manufactured", l: "Is the property a manufactured home (factory-built, on a permanent chassis)?", t: "radio", opts: YN, req: isRes, show: isRes },
         // Construction
         { t: "heading", l: "Construction project", show: function (v) { return v.loan_type === "construction"; } },
         { n: "k_budget", l: "Total construction budget", t: "money", half: true, req: true, show: function (v) { return v.loan_type === "construction"; } },

@@ -240,8 +240,9 @@
 
   function exportCard(a) {
     return '<section class="card card__pad"><h3>Loan files</h3>' +
-      '<p class="small muted" style="margin:0 0 12px">Fannie Mae ULAD / MISMO 3.4 — imports into Calyx Point, Arive and LendingPad. Contains SSN; each download is logged.</p>' +
+      '<p class="small muted" style="margin:0 0 12px">MISMO 3.4 XML imports into Calyx Point, Arive and LendingPad; the 1003 is Fannie Mae\'s official form, filled. Both contain the SSN — each download is logged.</p>' +
       '<button class="btn btn--navy btn--sm" style="width:100%" data-export="mismo.xml">Download MISMO 3.4 XML</button>' +
+      '<button class="btn btn--ghost btn--sm" style="width:100%;margin-top:8px" data-1003>Download Form 1003 (PDF)</button>' +
       "</section>";
   }
 
@@ -314,6 +315,35 @@
         if (!res.ok) return alert(res.error);
         e.target.reset(); loadPartners();
       }).catch(function () { btn.disabled = false; });
+  });
+
+  /* Form 1003: filled in this browser with pdf-lib (self-hosted, loaded on first use). */
+  function loadScript(src) {
+    return new Promise(function (ok, fail) {
+      if (document.querySelector('script[src="' + src + '"]')) return ok();
+      var sc = document.createElement("script"); sc.src = src; sc.onload = ok; sc.onerror = fail; document.head.appendChild(sc);
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-1003]");
+    if (!b || !detail) return;
+    var a = detail.app, label = b.textContent;
+    b.disabled = true; b.textContent = "Preparing 1003…";
+    Promise.all([
+      loadScript("/apply/vendor/pdf-lib-1.17.1.min.js").then(function () { return loadScript("/apply/urla1003.js?v=20260930"); }),
+      fetch("/apply/forms/URLA-2019-Borrower-v28.pdf").then(function (r) { if (!r.ok) throw new Error("form"); return r.arrayBuffer(); }),
+      api("/api/admin/applications/" + a.id + "/reveal", { json: { purpose: "1003" } }),
+    ]).then(function (res) {
+      if (!res[2].ok) throw new Error(res[2].error || "reveal");
+      return window.RegalURLA.fill1003(window.PDFLib, res[1], { app: a, fields: a.fields, pii: res[2].pii });
+    }).then(function (bytes) {
+      var url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" })), link = document.createElement("a");
+      link.href = url; link.download = a.ref + "_" + String(a.last_name || "loan").replace(/[^A-Za-z0-9-]/g, "") + "_Form1003.pdf";
+      document.body.appendChild(link); link.click();
+      setTimeout(function () { URL.revokeObjectURL(url); link.remove(); }, 1000);
+    }).catch(function (err) {
+      if (err && err.message !== "auth") alert("Couldn't build the 1003: " + (err && err.message || err));
+    }).then(function () { b.disabled = false; b.textContent = label; });
   });
 
   document.addEventListener("click", function (e) {
